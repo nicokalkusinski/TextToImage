@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IG Text to Image</title>
+
+    <style>
+        #textArea {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 400;
+        }
+
+        #canvas {
+            border: 1px solid black;
+            background-color: #fff;
+        }
+
+        #content {
+            width: 100%;
+        }
+
+        .side{
+            float: left;
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <div class="side">
+            Text on an image: <br>
+            <textarea name="textarea" id="textArea" cols="50" rows="10" oninput="draw()"></textarea>
+        </div>
+        <div class="side">
+            Font size: <br>
+            <input id="fontsize" type="number" value="50"><br>
+            Font wight: <br>
+            <input id="fontweight" type="number" value="900"><br>
+            Line Height: <br>
+            <input id="lineheight" type="number" value="60">
+
+        </div>
+    </div>
+    <div style="clear: both;"></div>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        function draw(){
+            //all the variables
+            var canvas = document.getElementById("canvas");
+            canvas.width = 1000;
+            canvas.height = 1000;
+            var c = canvas.getContext("2d");
+
+            var x = canvas.width / 2;
+            var y = canvas.height / 2;
+
+            var text = document.getElementById("textArea").value;
+            var fontsize = document.getElementById("fontsize").value;
+            var fontweight = document.getElementById("fontweight").value;
+            var lineheight = document.getElementById("lineheight").value;
+
+            //clearing the canvas
+            c.clearRect(0, 0, canvas.width, canvas.height);
+
+            //writing on canvas
+            c.textAlign = "center";
+            c.font = fontweight + " " + fontsize + "px Courier New";
+
+            var t = text;
+            var lines = t.split('\n');
+
+            for (var i = 0; i<lines.length; i++){
+                c.fillText(lines[i], x, y + (i*lineheight) );
+            }
+        }
+
+    </script>
+</body>
+</html>
