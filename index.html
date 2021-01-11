@@ -38,7 +38,10 @@
             <input id="fontweight" type="number" value="900" oninput="draw()"><br>
             Line Height: <br>
             <input id="lineheight" type="number" value="60" oninput="draw()">
-
+        </div>
+        <div class="side">
+            Canvas resolution (px): <br>
+            <input id="resX" type="number" value="1000" oninput="draw()"> x <input id="resY" type="number" value="1000" oninput="draw()">
         </div>
     </div>
     <div style="clear: both;"></div>
@@ -48,12 +51,14 @@
         function draw(){
             //all the variables
             var canvas = document.getElementById("canvas");
-            canvas.width = 1000;
-            canvas.height = 1000;
+            var cx = document.getElementById("resX").value;
+            var cy = document.getElementById("resY").value;
+            canvas.width = cx;
+            canvas.height = cy;
             var c = canvas.getContext("2d");
 
-            var x = canvas.width / 2;
-            var y = canvas.height / 2;
+            var x = cx / 2;
+            var y = cy / 2;
 
             var text = document.getElementById("textArea").value;
             var fontsize = document.getElementById("fontsize").value;
@@ -69,9 +74,12 @@
 
             var t = text;
             var lines = t.split('\n');
+            var textHeight = lines.length * lineheight;
+            var y_ = ((canvas.height - textHeight) / 2) + lineheight/1.5; //((100 - 60) / 2) = 20 + (60 / 2) = 20 + 30 = 50
+            console.log(y_)
 
             for (var i = 0; i<lines.length; i++){
-                c.fillText(lines[i], x, y + (i*lineheight) );
+                c.fillText(lines[i], x, y_ + (i*lineheight) );
             }
         }
 
