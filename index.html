@@ -6,14 +6,8 @@
     <title>IG Text to Image</title>
 
     <style>
-        #textArea {
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: 400;
-        }
-
         #canvas {
             border: 1px solid black;
-            background-color: #fff;
         }
 
         #content {
@@ -22,6 +16,8 @@
 
         .side{
             float: left;
+            padding-left: 0.3%;
+            padding-right: 0.3%;
         }
     </style>
 </head>
@@ -29,60 +25,211 @@
     <div id="content">
         <div class="side">
             Text on an image: <br>
-            <textarea name="textarea" id="textArea" cols="50" rows="10" oninput="draw()"></textarea>
+            <textarea name="textarea" id="textArea" cols="50" rows="10" oninput="draw()"></textarea><br>
+            <a id="download" download="img.png">
+                <button type="button" onclick="saveImg()">Download</button>
+            </a>
+            <select id="downloadOptions">
+                <option value="png" selected>png</option>
+                <option value="jpg">jpg</option>
+                <option value="tiff">tiff</option>
+                <option value="bmp">bmp</option>    
+            </select>
         </div>
         <div class="side">
+            Font: <br>
+            <select name="fontSelect" id="fonts" onchange="show()" style="width: 100%; height: 1.7em;">
+                <!--<option value="custom">Custom</option>-->
+                <option selected value="Courier New" style="font-family: 'Courier New', Courier, monospace;">Courier New</option>
+                <option value="Arial" style="font-family: Arial, Helvetica, sans-serif;">Arial</option>
+                <option value="Times New Roman" style="font-family: 'Times New Roman', Times, serif;">Times New Roman</option>
+            </select><br>
+            <div id="custom_div" style="display: none;">
+                Link to google fonts: <br>
+                <input id="input_box" type="text" oninput="getCustomFont()">
+            </div>
             Font size: <br>
             <input id="fontsize" type="number" value="50" oninput="draw()"><br>
             Font wight: <br>
             <input id="fontweight" type="number" value="900" oninput="draw()"><br>
+            Font color: <br>
+            <input id="fontcolor" type="text" value="#000" oninput="draw()"><br>
+        </div>
+        <div class="side">
             Line Height: <br>
-            <input id="lineheight" type="number" value="60" oninput="draw()">
+            <input id="lineheight" type="number" value="60" oninput="draw()"><br>
+            Letter spacing: <br>
+            <input id="letterspacing" type="number" value="1" oninput="draw()"><br>
+            Background color: <br>
+            <input id="backgroundcolor" type="text" value="#fff"  oninput="draw()"><br>
+            Text align: <br>
+            <select name="textAlignSelect" id="aligns" style="width: 100%; height: 1.7em;" oninput="draw()">
+                <option value="left">Left</option>
+                <option value="center" selected>Center</option>
+                <option value="right">Right</option>
+            </select><br>
+            Text position (X axis): <br>
+            <input id="xpos" type="number" placeholder="empty for center" oninput="draw()"><br>
+            
+        </div>
+        <div class="side">
+            shadow placement: <br>
+            <input id="shadowxoffset" type="number" placeholder="offset in x axis" oninput="draw()"><br>
+            <input id="shadowyoffset" type="number" placeholder="offset in y axis" oninput="draw()"><br><br>
+            Shadow color: <br>
+            <input id="shadowcolor" type="text" placeholder="#shadowColor" oninput="draw()"><br>
+            Shadow blur: <br>
+            <input id="shadowblur" type="number" placeholder="0 for no blur" oninput="draw()">
         </div>
         <div class="side">
             Canvas resolution (px): <br>
-            <input id="resX" type="number" value="1000" oninput="draw()"> x <input id="resY" type="number" value="1000" oninput="draw()">
+            <input id="resX" type="number" value="1000" oninput="draw()"> x <input id="resY" type="number" value="1000" oninput="draw()"><br>
         </div>
     </div>
-    <div style="clear: both;"></div>
+    <div style="clear: both;"></div><br>
     <canvas id="canvas"></canvas>
 
     <script>
+        /**
+         * TODO:
+         * custom fonts
+         * text coloring
+         */
+        function getCustomFont(){
+            //gets custom font from google fonts and save it in custom_font variable
+            //custom_font is used later in the drawing function
+        }
+
         function draw(){
-            //all the variables
+            /**
+             * get the canvas element and it's resolution from the input box
+             * @canvas canvas element
+             * @cx canvas x resolution
+             * @cy canvas y resolution
+             * @c context of the canvas
+             */
             var canvas = document.getElementById("canvas");
             var cx = document.getElementById("resX").value;
             var cy = document.getElementById("resY").value;
             canvas.width = cx;
             canvas.height = cy;
             var c = canvas.getContext("2d");
-
-            var x = cx / 2;
-            var y = cy / 2;
-
+            
+            /**
+             * get the variables to edit the text
+             * @text text from the textarea input box
+             * @fontsize size of the font
+             * @fontweight thiccness of the text
+             * @lineheight height of the line with text
+             * @fontcolor color of the text
+             * @backgroundcolor color of the background of the canvas
+             * @shadowxoffset X offset value for shadow
+             * @shadowyoffset Y offset value for shadow
+             * @shadowcolor color value of the shadow
+             * @shadowblur blur value of the shadow
+             * @letterspacing letter spacing value applied to text
+             * @textalign text align type [left, center, right]
+             * @xpos starting position of the first letter
+             * @fontfamily font family chosen by user
+             */
             var text = document.getElementById("textArea").value;
             var fontsize = document.getElementById("fontsize").value;
             var fontweight = document.getElementById("fontweight").value;
             var lineheight = document.getElementById("lineheight").value;
+            var fontcolor = document.getElementById("fontcolor").value;
+            var backgroundcolor = document.getElementById("backgroundcolor").value;
+            var shadowxoffset = document.getElementById("shadowxoffset").value;
+            var shadowyoffset = document.getElementById("shadowyoffset").value;
+            var shadowcolor = document.getElementById("shadowcolor").value;
+            var shadowblur = document.getElementById("shadowblur").value;
+            var letterspacing = document.getElementById("letterspacing").value;
+            var textalign = document.getElementById("aligns").value;
+            var xpos = document.getElementById("xpos").value;
+            var fontfamily = document.getElementById("fonts").value;
 
-            //clearing the canvas
+            /**
+             * Changes the letter spacing for the whole canvas
+             * don't know why this creates some sort of "lag" when placed below
+             * needs more testing and understanding and love :) 
+             */
+            canvas.style.letterSpacing = (letterspacing + "px");
+            
+            /**
+             * Clear the canvas before writing anything new
+             */
             c.clearRect(0, 0, canvas.width, canvas.height);
+            
+            /**
+             * @x and @y created for centering the content of the text
+             * @x and @y divide the resolution for width and height by 2
+             * which is the center of the canvas
+             */
+            var x = cx / 2;
+            var y = cy / 2;
+            
+            /**
+             * align the text to the center
+             * c.font declare how would the font look like on canvas
+             */
+            c.textAlign = textalign;
+            c.font = fontweight + " " + fontsize + "px " + fontfamily;
 
-            //writing on canvas
-            c.textAlign = "center";
-            c.font = fontweight + " " + fontsize + "px Courier New";
-
+            /**
+             * @t text from the textarea input
+             * @lines array with text from individual lines
+             * @textHeight height in pixels of all the lines
+             * @y_ new Y position of the text to center the text
+             * if there's any new starting position declared by user set is as a new starting X position 
+             */
             var t = text;
             var lines = t.split('\n');
             var textHeight = lines.length * lineheight;
-            var y_ = ((canvas.height - textHeight) / 2) + lineheight/1.5; //((100 - 60) / 2) = 20 + (60 / 2) = 20 + 30 = 50
-            console.log(y_)
+            var y_ = ((canvas.height - textHeight) / 2) + lineheight/1.5;
+            if(xpos != 0) x = xpos;
 
+            /**
+             * fills the background with background color
+             * picks the color for the font 
+             */
+            c.fillStyle = backgroundcolor;
+            c.fillRect(0,0,canvas.width, canvas.height);
+            c.fillStyle = fontcolor;
+
+            /**
+             * setting up the shadows offsets, color and blur
+             */
+            if(shadowxoffset != 0) c.shadowOffsetX = shadowxoffset;
+            if(shadowyoffset != 0) c.shadowOffsetY = shadowyoffset;
+            if(shadowcolor != 0) c.shadowColor = shadowcolor;
+            if(shadowblur != 0) c.shadowBlur = shadowblur;
+
+            /**
+             * draws all the lines of the text 
+             */
             for (var i = 0; i<lines.length; i++){
-                c.fillText(lines[i], x, y_ + (i*lineheight) );
+                c.fillText(lines[i], x, y_ + (i*lineheight));
             }
         }
 
+        function saveImg(){
+            var saveType = document.getElementById("downloadOptions").value;
+            var download = document.getElementById("download");
+            var image = document.getElementById("canvas").toDataURL(("image/" + saveType));
+            download.setAttribute("download", ("img." + saveType));
+            download.setAttribute("href", image);
+        }
+
+        function show(){
+            var select = document.getElementById("fonts");
+            var div = document.getElementById("custom_div");
+            var input = document.getElementById("input_box");
+            if(select.value == "custom"){
+                div.style = "display: block;";
+            } else {
+                div.style = "display: none;";
+            }
+            select.addEventListener("change", draw());
+        }
     </script>
 </body>
 </html>
