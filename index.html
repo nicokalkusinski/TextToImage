@@ -54,6 +54,13 @@
             <input id="fontweight" type="number" value="900" oninput="draw()"><br>
             Font color: <br>
             <input id="fontcolor" type="text" value="#000" oninput="draw()"><br>
+            Syntax coloring: <br>
+            <select id="syntaxcoloring" style="width: 100%; height: 1.7em;">
+                <option value="none">none</option>
+                <option value="python">Python</option>
+                <option value="java">Java</option>
+                <option value="c#">C#</option>
+            </select>
         </div>
         <div class="side">
             Line Height: <br>
@@ -74,10 +81,10 @@
         </div>
         <div class="side">
             shadow placement: <br>
-            <input id="shadowxoffset" type="number" placeholder="offset in x axis" oninput="draw()"><br>
-            <input id="shadowyoffset" type="number" placeholder="offset in y axis" oninput="draw()"><br><br>
+            <input id="shadowxoffset" type="number" value="3" placeholder="offset in x axis" oninput="draw()"><br>
+            <input id="shadowyoffset" type="number" value="3" placeholder="offset in y axis" oninput="draw()"><br><br>
             Shadow color: <br>
-            <input id="shadowcolor" type="text" placeholder="#shadowColor" oninput="draw()"><br>
+            <input id="shadowcolor" type="text" value="#ccc" placeholder="#shadowColor" oninput="draw()"><br>
             Shadow blur: <br>
             <input id="shadowblur" type="number" placeholder="0 for no blur" oninput="draw()">
         </div>
@@ -209,6 +216,26 @@
             for (var i = 0; i<lines.length; i++){
                 c.fillText(lines[i], x, y_ + (i*lineheight));
             }
+            //drawColor(x, y_);
+        }
+
+        function drawColor(x, y){
+            var lang = document.getElementById("syntaxcoloring").value;
+            var c = document.getElementById("canvas").getContext("2d");
+            if(lang != "none"){
+                var text = document.getElementById("textArea").value;
+                var words = text.split(/\s+/);
+            }
+
+            words.forEach(element => {
+                if(element == "class"){
+                    c.fillStyle = "red";
+                    c.fillText(element, x, y);
+                } else {
+                    c.fillStyle = "black";
+                    c.fillText(element, x, y);
+                }
+            });
         }
 
         function saveImg(){
