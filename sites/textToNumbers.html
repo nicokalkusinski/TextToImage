@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>text to numbers</title>
+
+    <style>
+        #output {
+            padding: 0.1%;
+            border: solid black 1px;
+        }
+    </style>
+
+</head>
+<body>
+    <textarea id="input" cols="50" rows="10" oninput="textToNumber()"></textarea>
+    <div id="output"></div>
+
+    <script>
+        var input = document.getElementById("input");
+        var output = document.getElementById("output");
+        input.addEventListener("input", textToNumber);
+
+        function textToNumber(){
+            var letters = input.value.split("");
+            var sentence = "output: <br>";
+            //console.log(letters);
+            letters.forEach(e => {
+                if(e == "i" || e == "l") e = "1";
+                if(e == "e") e = "3";
+                if(e == "a") e = "4";
+                if(e == "s") e = "5";
+                if(e == "b") e = "6";
+                if(e == "t") e = "7";
+                if(e == "\n") e = "<br>";
+                sentence += e;
+            });
+            output.innerHTML = sentence;
+        }
+
+    </script>
+</body>
+</html>
